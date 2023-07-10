@@ -1,13 +1,25 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-import os, sys
+import os, sys, json
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lib"))
 from splunklib.searchcommands import dispatch, StreamingCommand, Configuration, Option, validators
 import openai
 
-openai.api_key = "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"
+
+def getConfig():
+    if os.path.exists(os.path.join(os.path.dirname(__file__), "..", "local", "config.json")):
+        with open(os.path.join(os.path.dirname(__file__), "..", "local", "config.json")) as file:
+            config = json.load(file)
+            return config
+    else:
+        with open(os.path.join(os.path.dirname(__file__), "..", "default", "config.json")) as file:
+            config = json.load(file)
+            return config
+
+config = getConfig()
+openai.api_key = config["api_key"]
 
 @Configuration()
 class SplunkGPT(StreamingCommand):
